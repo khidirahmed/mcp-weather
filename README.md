@@ -1,41 +1,75 @@
-# MCP Weather Server
+# Weather MCP Server
 
-A simple MCP server that provides hourly weather forecasts using the AccuWeather API.
+A Model Context Protocol (MCP) server that provides weather information using the AccuWeather API.
 
-## Setup
+## Installation
 
-1. Install dependencies using `uv`:
+1. Clone the repository:
 ```bash
-uv venv
-uv sync
+git clone https://github.com/khidirahmed/mcp-weather-1.git
+cd mcp-weather-1
 ```
 
-2. Create a `.env` file with your AccuWeather API key:
+2. Install the package:
+```bash
+pip install -e .
 ```
+
+## Configuration
+
+1. Create a `.env` file in the project root with your AccuWeather API key:
+```bash
 ACCUWEATHER_API_KEY=your_api_key_here
 ```
 
 You can get an API key by registering at [AccuWeather API](https://developer.accuweather.com/).
 
-## Running the Server
+## Usage
+
+### HTTP Transport (Default)
+
+Run the server with HTTP transport (recommended for production):
+
+```bash
+weather-mcp
+```
+
+By default, the server runs on `http://localhost:8080`. You can specify a different port:
+
+```bash
+weather-mcp --port 3000
+```
+
+### STDIO Transport
+
+For development and testing, you can use STDIO transport:
+
+```bash
+weather-mcp --stdio
+```
+
+## Client Configuration
+
+Add this to your client's configuration:
 
 ```json
 {
-    "mcpServers": {
-        "weather": {
-            "command": "uvx",
-            "args": ["--from", "git+https://github.com/adhikasp/mcp-weather.git", "mcp-weather"],
-            "env": {
-                "ACCUWEATHER_API_KEY": "your_api_key_here"
-            }
-        }
+  "mcpServers": {
+    "weather": {
+      "url": "http://localhost:8080/mcp"
     }
+  }
 }
 ```
 
-## API Usage
+## Available Tools
 
-### Get Hourly Weather Forecast
+### weather_hourly
+
+Get hourly weather forecast for a location.
+
+Parameters:
+- `location` (string): The location to get weather for (city name)
 
 Response:
 ```json
@@ -57,22 +91,26 @@ Response:
         {
             "relative_time": "+1 hour",
             "temperature": {
-                "value": 32.2,
+                "value": 16,
                 "unit": "C"
             },
-            "weather_text": "Partly sunny",
-            "precipitation_probability": 40,
-            "precipitation_type": "Rain",
-            "precipitation_intensity": "Light"
+            "weather_text": "Mostly sunny",
+            "precipitation_probability": 10,
+            "precipitation_type": null,
+            "precipitation_intensity": null
         }
     ]
 }
 ```
 
-The API provides:
-- Current weather conditions including temperature, weather description, humidity, and precipitation status
-- 12-hour forecast with hourly data including:
-  - Relative time from current time
-  - Temperature in Celsius
-  - Weather description
-  - Precipitation probability, type, and intensity
+## Development
+
+To install development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+## License
+
+MIT License
